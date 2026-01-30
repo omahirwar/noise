@@ -37,10 +37,7 @@ canvas{ position:fixed; inset:0; }
     color:#FFD700;
 }
 
-#progress{
-    opacity:.8;
-    margin-bottom:12px;
-}
+#progress{ opacity:.8; margin-bottom:12px; }
 
 .option{
     border:1px solid #FFD700;
@@ -70,24 +67,28 @@ canvas{ position:fixed; inset:0; }
 </div>
 
 <script>
-// ================= 13 ENGLISH QUESTIONS =================
+// ================= QUESTIONS (ANSWER TEXT) =================
 const quiz = [
- {q:"What is Noise.xyz primarily known for?",o:["Web3 social discovery platform","Music streaming app","E-commerce website","Movie platform"],a:0},
- {q:"What is the main focus of the Noise project?",o:["Web3 community and discovery","Gaming","Banking services","Education"],a:0},
- {q:"What type of content can you discover on Noise?",o:["Trends and news","Recipes","Movies","Job listings"],a:0},
- {q:"Noise.xyz belongs to which industry?",o:["Crypto / Web3","Healthcare","Agriculture","Automobile"],a:0},
- {q:"Who is the primary audience of Noise?",o:["Web3 users","Children","Doctors","Drivers"],a:0},
- {q:"What kind of experience does Noise provide?",o:["Community-driven experience","Offline usage","Silent mode","Single-user only"],a:0},
- {q:"How do users engage on the Noise platform?",o:["Through trends and content","Through ads","Through games","Through calls"],a:0},
- {q:"What is the main purpose of Noise?",o:["Discovery and interaction","Watching movies","Listening to music","Banking"],a:0},
- {q:"How would you describe the Noise.xyz UI?",o:["Modern and clean","Old styled","Text-only","Paper-based"],a:0},
- {q:"What does the Noise community promote?",o:["Web3 awareness","Cooking","Fitness","Travel"],a:0},
- {q:"What is the Noise ecosystem based on?",o:["Social discovery","Offline work","Solo play","Messaging"],a:0},
- {q:"What can users do on Noise.xyz?",o:["Explore trends","Order food","Book tickets","Edit videos"],a:0},
- {q:"What is the core idea behind the Noise project?",o:["Make signal from noise","Stay silent","Avoid trends","Hide content"],a:0}
+ {q:"What is Noise.xyz primarily known for?",a:"Web3 social discovery platform",w:["Music streaming app","E-commerce website","Movie platform"]},
+ {q:"What is the main focus of the Noise project?",a:"Web3 community and discovery",w:["Gaming","Banking services","Education"]},
+ {q:"What type of content can you discover on Noise?",a:"Trends and news",w:["Recipes","Movies","Job listings"]},
+ {q:"Noise.xyz belongs to which industry?",a:"Crypto / Web3",w:["Healthcare","Agriculture","Automobile"]},
+ {q:"Who is the primary audience of Noise?",a:"Web3 users",w:["Children","Doctors","Drivers"]},
+ {q:"What kind of experience does Noise provide?",a:"Community-driven experience",w:["Offline usage","Silent mode","Single-user only"]},
+ {q:"How do users engage on the Noise platform?",a:"Through trends and content",w:["Through ads","Through games","Through calls"]},
+ {q:"What is the main purpose of Noise?",a:"Discovery and interaction",w:["Watching movies","Listening to music","Banking"]},
+ {q:"How would you describe the Noise.xyz UI?",a:"Modern and clean",w:["Old styled","Text-only","Paper-based"]},
+ {q:"What does the Noise community promote?",a:"Web3 awareness",w:["Cooking","Fitness","Travel"]},
+ {q:"What is the Noise ecosystem based on?",a:"Social discovery",w:["Offline work","Solo play","Messaging"]},
+ {q:"What can users do on Noise.xyz?",a:"Explore trends",w:["Order food","Book tickets","Edit videos"]},
+ {q:"What is the core idea behind the Noise project?",a:"Make signal from noise",w:["Stay silent","Avoid trends","Hide content"]}
 ];
 
-// ================= STATE =================
+// ================= SHUFFLE FUNCTION =================
+function shuffle(arr){
+    return arr.sort(()=>Math.random()-0.5);
+}
+
 let index = 0;
 let answered = false;
 
@@ -141,10 +142,14 @@ function loadQuestion(){
     result.innerText="";
     options.innerHTML="";
 
+    const q = quiz[index];
     progress.innerText = `Question ${index+1} / 13`;
-    question.innerText = quiz[index].q;
+    question.innerText = q.q;
 
-    quiz[index].o.forEach((opt,i)=>{
+    // build & shuffle options
+    let opts = shuffle([q.a, ...q.w]);
+
+    opts.forEach(opt=>{
         const d=document.createElement("div");
         d.className="option";
         d.innerText=opt;
@@ -154,7 +159,7 @@ function loadQuestion(){
             answered=true;
             document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
 
-            if(i===quiz[index].a){
+            if(opt === q.a){
                 result.innerText="✅ Correct!";
                 setTimeout(()=>firework(innerWidth/2,innerHeight/2),700);
             }else{
@@ -167,13 +172,9 @@ function loadQuestion(){
                     loadQuestion();
                 }else{
                     question.innerText="🎉 Quiz Completed!";
-                    options.innerHTML="";
                     progress.innerText="Redirecting to Home...";
-
-                    // ✅ AUTO REDIRECT
-                    setTimeout(()=>{
-                        window.location.href = "index.html";
-                    },2000);
+                    options.innerHTML="";
+                    setTimeout(()=>window.location.href="index.html",2000);
                 }
             },1200);
         };
