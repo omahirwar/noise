@@ -9,6 +9,51 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="tooplate-fireworks-style.css">
+
+    <!-- ✅ ADDITIONAL STYLE FOR NOISE INFO -->
+    <style>
+        .noise-info{
+            position: relative;
+            max-width: 900px;
+            margin: 12vh auto 0;
+            padding: 2.5rem 3rem;
+            text-align: center;
+            z-index: 5;
+            color: rgba(244, 231, 195, 0.85);
+        }
+
+        .noise-info h2{
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #FFD700, #FFFEF7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .noise-info h3{
+            margin-top: 2.2rem;
+            font-size: 1.4rem;
+            color: #FFD700;
+            font-family: 'Cormorant Garamond', serif;
+        }
+
+        .noise-info p{
+            font-size: 1.05rem;
+            line-height: 1.85;
+            margin-top: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .noise-tagline{
+            margin-top: 2.8rem;
+            font-style: italic;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            opacity: 0.65;
+        }
+    </style>
 </head>
 
 <body>
@@ -36,6 +81,31 @@
         <h1>NOISE CONTRIBUTER</h1>
         <p class="subtitle">Create Our Content</p>
     </header>
+
+    <!-- ✅ ADDED NOISE INFORMATION SECTION -->
+    <section class="noise-info">
+        <h2>What is Noise?</h2>
+        <p>
+            Noise is a next-generation Web3 discovery platform where meaningful signals rise above chaos.
+            It brings together communities, trends, and conversations that actually matter.
+        </p>
+
+        <h3>How Noise Works</h3>
+        <p>
+            Contributors create and interact with content while the ecosystem highlights what gains
+            real engagement — not what shouts the loudest.
+        </p>
+
+        <h3>Your Role as a Contributor</h3>
+        <p>
+            Every action you take helps transform raw noise into valuable signal.
+            Together, contributors shape what the world discovers next.
+        </p>
+
+        <p class="noise-tagline">
+            Turning Noise Into Signal
+        </p>
+    </section>
 
     <div class="instructions">
         <h2>Click anywhere to launch fireworks</h2>
@@ -69,14 +139,12 @@
             <span class="control-label">Actions</span>
             <div class="action-buttons">
 
-                <!-- ORIGINAL PLAY BUTTON -->
                 <button class="action-btn" id="autoShow">
                     <span class="play-icon">▶</span>
                     <span class="stop-icon">⏹</span>
                     <span class="button-text">Play</span>
                 </button>
 
-                <!-- ✅ ADDED PLAY QUIZ BUTTON -->
                 <button class="action-btn secondary" id="playQuiz">
                     <span class="button-text">Play Quiz</span>
                 </button>
@@ -89,7 +157,6 @@
 
 <script src="tooplate-fireworks-composer.js"></script>
 
-<!-- ✅ QUIZ REDIRECT SCRIPT -->
 <script>
 document.getElementById("playQuiz").addEventListener("click", () => {
     window.location.href = "quiz.html";
