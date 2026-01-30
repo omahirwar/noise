@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Noise Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tooplate-fireworks-style.css">
+
+<style>
+body{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background:linear-gradient(135deg,#0a0a0f,#1a1a2e);
+    color:#fff;
+    font-family:'Work Sans',sans-serif;
+}
+
+.quiz-box{
+    background:rgba(0,0,0,0.6);
+    padding:30px;
+    border-radius:16px;
+    width:90%;
+    max-width:420px;
+    text-align:center;
+    box-shadow:0 0 40px rgba(212,175,55,0.25);
+}
+
+.quiz-box h1{
+    font-family:'Cormorant Garamond',serif;
+    color:#FFD700;
+    margin-bottom:20px;
+}
+
+.option{
+    border:1px solid #FFD700;
+    padding:12px;
+    margin:10px 0;
+    border-radius:10px;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.option:hover{
+    background:#FFD700;
+    color:#000;
+}
+
+#result{
+    margin-top:15px;
+    font-size:1.1rem;
+}
+</style>
+</head>
+
+<body>
+
+<div class="quiz-box">
+    <h1>🎆 Noise Quiz</h1>
+    <p id="question"></p>
+    <div id="options"></div>
+    <p id="result"></p>
+</div>
+
+<script>
+const quiz=[
+ {q:"Noise ka core vibe kya hai?",o:["Energy","Silence","Sleep","Boring"],a:0},
+ {q:"Fireworks kis tech pe bane?",o:["Canvas","Video","GIF","Flash"],a:0},
+ {q:"2026 Noise ke liye?",o:["New Era","End","Nothing","Bug"],a:0}
+];
+
+const q=quiz[Math.floor(Math.random()*quiz.length)];
+question.innerText=q.q;
+
+q.o.forEach((opt,i)=>{
+ const d=document.createElement("div");
+ d.className="option";
+ d.innerText=opt;
+ d.onclick=()=>result.innerText=i===q.a?"✅ Correct!":"❌ Wrong!";
+ options.appendChild(d);
+});
+</script>
+
+</body>
+</html>
