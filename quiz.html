@@ -15,11 +15,7 @@ body{
     font-family:'Work Sans',sans-serif;
     color:#fff;
 }
-
-canvas{
-    position:fixed;
-    inset:0;
-}
+canvas{ position:fixed; inset:0; }
 
 .quiz-box{
     position:fixed;
@@ -30,7 +26,7 @@ canvas{
     padding:30px;
     border-radius:16px;
     width:90%;
-    max-width:440px;
+    max-width:460px;
     text-align:center;
     z-index:10;
     box-shadow:0 0 40px rgba(212,175,55,0.35);
@@ -39,7 +35,11 @@ canvas{
 .quiz-box h1{
     font-family:'Cormorant Garamond',serif;
     color:#FFD700;
-    margin-bottom:15px;
+}
+
+#progress{
+    opacity:.8;
+    margin-bottom:12px;
 }
 
 .option{
@@ -50,21 +50,10 @@ canvas{
     cursor:pointer;
     transition:.3s;
 }
+.option:hover{ background:#FFD700; color:#000; }
+.option.disabled{ pointer-events:none; opacity:.5; }
 
-.option:hover{
-    background:#FFD700;
-    color:#000;
-}
-
-.option.disabled{
-    pointer-events:none;
-    opacity:0.5;
-}
-
-#result{
-    margin-top:15px;
-    font-size:1.1rem;
-}
+#result{ margin-top:12px; font-size:1.1rem; }
 </style>
 </head>
 
@@ -74,48 +63,46 @@ canvas{
 
 <div class="quiz-box">
     <h1>🎆 Noise Quiz</h1>
+    <div id="progress"></div>
     <p id="question"></p>
     <div id="options"></div>
     <p id="result"></p>
 </div>
 
 <script>
-// ================== QUIZ (13 QUESTIONS) ==================
+// ================= 13 ENGLISH QUESTIONS =================
 const quiz = [
- {q:"Noise.xyz platform kis cheez ke liye jana jata hai?",o:["Web3 social & discovery","Music app","E-commerce","Movie site"],a:0},
- {q:"Noise ka main focus kya hai?",o:["Web3 community","Gaming","Banking","Education"],a:0},
- {q:"Noise par kya discover hota hai?",o:["Trends & news","Recipes","Movies","Jobs"],a:0},
- {q:"Noise.xyz kis industry se related hai?",o:["Crypto / Web3","Healthcare","Farming","Cars"],a:0},
- {q:"Noise ka primary audience kaun hai?",o:["Web3 users","Kids","Doctors","Drivers"],a:0},
- {q:"Noise ka experience kis type ka hai?",o:["Community driven","Offline","Silent","Single user"],a:0},
- {q:"Noise par engagement kis se hota hai?",o:["Trends & content","Ads","Games","Calls"],a:0},
- {q:"Noise ka purpose kya hai?",o:["Discovery & interaction","Watching movies","Listening songs","Banking"],a:0},
- {q:"Noise.xyz ka UI kaisa hota hai?",o:["Modern & clean","Old","Text only","Paper based"],a:0},
- {q:"Noise community kis cheez ko promote karti hai?",o:["Web3 awareness","Cooking","Fitness","Travel"],a:0},
- {q:"Noise ka ecosystem kis par based hai?",o:["Social discovery","Offline work","Solo play","Messaging"],a:0},
- {q:"Noise.xyz ka use karke user kya karta hai?",o:["Explore trends","Order food","Book tickets","Edit videos"],a:0},
- {q:"Noise project ka core idea kya hai?",o:["Make signal from noise","Stay silent","Avoid trends","Hide content"],a:0}
+ {q:"What is Noise.xyz primarily known for?",o:["Web3 social discovery platform","Music streaming app","E-commerce website","Movie platform"],a:0},
+ {q:"What is the main focus of the Noise project?",o:["Web3 community and discovery","Gaming","Banking services","Education"],a:0},
+ {q:"What type of content can you discover on Noise?",o:["Trends and news","Recipes","Movies","Job listings"],a:0},
+ {q:"Noise.xyz belongs to which industry?",o:["Crypto / Web3","Healthcare","Agriculture","Automobile"],a:0},
+ {q:"Who is the primary audience of Noise?",o:["Web3 users","Children","Doctors","Drivers"],a:0},
+ {q:"What kind of experience does Noise provide?",o:["Community-driven experience","Offline usage","Silent mode","Single-user only"],a:0},
+ {q:"How do users engage on the Noise platform?",o:["Through trends and content","Through ads","Through games","Through calls"],a:0},
+ {q:"What is the main purpose of Noise?",o:["Discovery and interaction","Watching movies","Listening to music","Banking"],a:0},
+ {q:"How would you describe the Noise.xyz UI?",o:["Modern and clean","Old styled","Text-only","Paper-based"],a:0},
+ {q:"What does the Noise community promote?",o:["Web3 awareness","Cooking","Fitness","Travel"],a:0},
+ {q:"What is the Noise ecosystem based on?",o:["Social discovery","Offline work","Solo play","Messaging"],a:0},
+ {q:"What can users do on Noise.xyz?",o:["Explore trends","Order food","Book tickets","Edit videos"],a:0},
+ {q:"What is the core idea behind the Noise project?",o:["Make signal from noise","Stay silent","Avoid trends","Hide content"],a:0}
 ];
 
-// ================== LOAD RANDOM QUESTION ==================
-const q = quiz[Math.floor(Math.random()*quiz.length)];
-question.innerText = q.q;
-
+// ================= STATE =================
+let index = 0;
 let answered = false;
 
-// ================== FIREWORKS ==================
+// ================= FIREWORKS =================
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 
 let particles=[];
-
 class Particle{
     constructor(x,y){
-        this.x=x; this.y=y;
         const a=Math.random()*Math.PI*2;
         const s=Math.random()*4+2;
+        this.x=x; this.y=y;
         this.vx=Math.cos(a)*s;
         this.vy=Math.sin(a)*s;
         this.life=1;
@@ -135,12 +122,10 @@ class Particle{
         ctx.fill();
     }
 }
-
 function firework(x,y){
     for(let i=0;i<80;i++) particles.push(new Particle(x,y));
 }
-
-function animate(){
+(function animate(){
     ctx.fillStyle="rgba(10,10,15,0.45)";
     ctx.fillRect(0,0,canvas.width,canvas.height);
     particles.forEach((p,i)=>{
@@ -148,30 +133,56 @@ function animate(){
         if(p.life<=0) particles.splice(i,1);
     });
     requestAnimationFrame(animate);
+})();
+
+// ================= QUIZ FLOW =================
+function loadQuestion(){
+    answered=false;
+    result.innerText="";
+    options.innerHTML="";
+
+    progress.innerText = `Question ${index+1} / 13`;
+    question.innerText = quiz[index].q;
+
+    quiz[index].o.forEach((opt,i)=>{
+        const d=document.createElement("div");
+        d.className="option";
+        d.innerText=opt;
+
+        d.onclick=()=>{
+            if(answered) return;
+            answered=true;
+            document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
+
+            if(i===quiz[index].a){
+                result.innerText="✅ Correct!";
+                setTimeout(()=>firework(innerWidth/2,innerHeight/2),700);
+            }else{
+                result.innerText="❌ Wrong!";
+            }
+
+            setTimeout(()=>{
+                index++;
+                if(index < quiz.length){
+                    loadQuestion();
+                }else{
+                    question.innerText="🎉 Quiz Completed!";
+                    options.innerHTML="";
+                    progress.innerText="Redirecting to Home...";
+
+                    // ✅ AUTO REDIRECT
+                    setTimeout(()=>{
+                        window.location.href = "index.html";
+                    },2000);
+                }
+            },1200);
+        };
+
+        options.appendChild(d);
+    });
 }
-animate();
 
-// ================== OPTIONS ==================
-q.o.forEach((opt,i)=>{
-    const d=document.createElement("div");
-    d.className="option";
-    d.innerText=opt;
-
-    d.onclick=()=>{
-        if(answered) return;
-        answered=true;
-        document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
-
-        if(i===q.a){
-            result.innerText="✅ Correct!";
-            setTimeout(()=>firework(innerWidth/2,innerHeight/2),1000);
-        }else{
-            result.innerText="❌ Wrong!";
-        }
-    };
-
-    options.appendChild(d);
-});
+loadQuestion();
 </script>
 
 </body>
