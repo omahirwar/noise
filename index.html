@@ -172,6 +172,15 @@ document.getElementById("playQuiz").addEventListener("click", () => {
     window.location.href = "quiz.html";
 });
 </script>
-
 </body>
 </html>
+<script>
+/* Mobile: hide instructions after first interaction */
+if (window.innerWidth <= 768) {
+	setTimeout(() => {
+		const ins = document.querySelector('.instructions');
+		if (ins) ins.style.display = 'none';
+	}, 3500);
+}
+</script>
+
