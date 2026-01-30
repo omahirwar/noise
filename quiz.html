@@ -5,7 +5,7 @@
 <title>Noise Quiz</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
 body{
@@ -15,7 +15,6 @@ body{
     font-family:'Work Sans',sans-serif;
     color:#fff;
 }
-canvas{ position:fixed; inset:0; }
 
 /* QUIZ BOX */
 .quiz-box{
@@ -23,65 +22,78 @@ canvas{ position:fixed; inset:0; }
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    background:rgba(0,0,0,0.65);
-    padding:30px;
-    border-radius:16px;
+    background:rgba(0,0,0,.65);
+    padding:24px;
+    border-radius:14px;
     width:90%;
     max-width:460px;
     text-align:center;
-    z-index:10;
+    z-index:5;
 }
-
 .option{
     border:1px solid gold;
-    padding:12px;
-    margin:10px 0;
-    border-radius:10px;
+    padding:10px;
+    margin:8px 0;
+    border-radius:8px;
     cursor:pointer;
 }
 .option.disabled{pointer-events:none;opacity:.5}
 
-/* FULLSCREEN EFFECT LAYER */
-.effect{
+/* DRAGON SVG */
+#dragon{
     position:fixed;
-    inset:0;
-    pointer-events:none;
+    width:220px;
+    top:40%;
+    left:-250px;
     z-index:20;
     display:none;
+    animation:dragonFly 2s linear forwards;
 }
-
-/* DRAGON */
-.dragon{
-    background:radial-gradient(circle at center, #ff00ff, #ff6600, #000);
-    animation:dragonMove 1.5s ease-out;
-}
-@keyframes dragonMove{
-    from{transform:scale(.3) rotate(-20deg);opacity:0}
-    to{transform:scale(1.2) rotate(10deg);opacity:0}
+@keyframes dragonFly{
+    to{left:110%;}
 }
 
 /* BIRDS */
-.birds{
-    background:
-      repeating-radial-gradient(circle at 20% 30%, #fff 0 2px, transparent 3px 40px),
-      repeating-radial-gradient(circle at 70% 60%, #fff 0 2px, transparent 3px 35px);
-    animation:birdsFly 1.2s linear;
+.bird{
+    position:fixed;
+    width:50px;
+    top:random;
+    left:-60px;
+    animation:birdFly 1.5s linear forwards;
 }
-@keyframes birdsFly{
-    from{opacity:0;transform:translateY(50px)}
-    to{opacity:0;transform:translateY(-100px)}
+@keyframes birdFly{
+    to{left:110%;}
+}
+
+/* CONTROLS */
+.controls{
+    position:fixed;
+    top:15px;
+    right:15px;
+    z-index:30;
+}
+button{
+    padding:6px 10px;
+    border-radius:6px;
+    border:none;
+    cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<canvas id="canvas"></canvas>
+<div class="controls">
+    <button id="muteBtn">🔊</button>
+</div>
 
-<div class="effect" id="effect"></div>
+<!-- DRAGON SVG -->
+<svg id="dragon" viewBox="0 0 512 512">
+<path fill="gold" d="M256 20l60 120-80-20-40 80-40-80-80 20z"/>
+</svg>
 
 <div class="quiz-box">
-    <h1>🎆 Noise Quiz</h1>
+    <h2>Noise Quiz</h2>
     <p id="question"></p>
     <div id="options"></div>
     <p id="result"></p>
@@ -92,52 +104,81 @@ canvas{ position:fixed; inset:0; }
 <audio id="birdSound" src="https://assets.mixkit.co/sfx/preview/mixkit-birds-chirping-ambience-1827.mp3"></audio>
 
 <script>
-// ===== QUESTIONS (short demo, 13 same logic laga sakta hai) =====
-const quiz=[
- {q:"Noise is mainly about?",a:"Web3 discovery",w:["Music","Movies","Food"]},
- {q:"Noise audience?",a:"Web3 users",w:["Kids","Doctors","Drivers"]}
+// ================= QUESTIONS (13) =================
+const quiz = [
+ {q:"What is Noise.xyz primarily known for?",a:"Web3 social discovery platform",w:["Music app","Movie site","E-commerce"]},
+ {q:"Noise main focus?",a:"Web3 community",w:["Gaming","Banking","Education"]},
+ {q:"Noise industry?",a:"Crypto / Web3",w:["Healthcare","Auto","Food"]},
+ {q:"Noise users?",a:"Web3 users",w:["Kids","Drivers","Doctors"]},
+ {q:"Noise content?",a:"Trends & news",w:["Movies","Recipes","Jobs"]},
+ {q:"Noise UI style?",a:"Modern & clean",w:["Old","Text","Paper"]},
+ {q:"Noise ecosystem?",a:"Social discovery",w:["Offline","Solo","Messaging"]},
+ {q:"Noise promotes?",a:"Web3 awareness",w:["Fitness","Cooking","Travel"]},
+ {q:"Noise allows?",a:"Explore trends",w:["Order food","Edit video","Tickets"]},
+ {q:"Noise experience?",a:"Community driven",w:["Silent","Offline","Solo"]},
+ {q:"Noise engagement?",a:"Content & trends",w:["Ads","Calls","Games"]},
+ {q:"Noise purpose?",a:"Discovery & interaction",w:["Music","Movies","Banking"]},
+ {q:"Noise core idea?",a:"Make signal from noise",w:["Silence","Ignore","Hide"]}
 ];
+
+let idx=0, locked=false, muted=false;
+const dragon=document.getElementById("dragon");
+
+document.getElementById("muteBtn").onclick=()=>{
+    muted=!muted;
+    muteBtn.textContent = muted ? "🔇" : "🔊";
+};
 
 function shuffle(a){return a.sort(()=>Math.random()-.5)}
 
-let i=0,locked=false;
-const effect=document.getElementById("effect");
+function vibrate(){ if(navigator.vibrate) navigator.vibrate(200); }
+
+function spawnBirds(){
+    for(let i=0;i<7;i++){
+        const b=document.createElement("img");
+        b.src="https://upload.wikimedia.org/wikipedia/commons/3/32/Flying_bird_icon.svg";
+        b.className="bird";
+        b.style.top=Math.random()*80+"%";
+        document.body.appendChild(b);
+        setTimeout(()=>b.remove(),1500);
+    }
+}
 
 function load(){
- locked=false;
- options.innerHTML=""; result.innerText="";
- const q=quiz[i];
- question.innerText=q.q;
+    locked=false;
+    options.innerHTML="";
+    result.innerText="";
+    question.innerText=quiz[idx].q;
 
- shuffle([q.a,...q.w]).forEach(opt=>{
-  const d=document.createElement("div");
-  d.className="option"; d.innerText=opt;
-  d.onclick=()=>{
-   if(locked) return;
-   locked=true;
-   document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
+    shuffle([quiz[idx].a,...quiz[idx].w]).forEach(opt=>{
+        const d=document.createElement("div");
+        d.className="option";
+        d.innerText=opt;
+        d.onclick=()=>{
+            if(locked) return;
+            locked=true;
+            document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
+            vibrate();
 
-   if(opt===q.a){
-     effect.className="effect dragon";
-     effect.style.display="block";
-     dragonSound.play();
-     result.innerText="✅ Correct!";
-   }else{
-     effect.className="effect birds";
-     effect.style.display="block";
-     birdSound.play();
-     result.innerText="❌ Wrong!";
-   }
+            if(opt===quiz[idx].a){
+                dragon.style.display="block";
+                if(!muted) dragonSound.play();
+                result.innerText="✅ Correct!";
+                setTimeout(()=>dragon.style.display="none",2000);
+            }else{
+                spawnBirds();
+                if(!muted) birdSound.play();
+                result.innerText="❌ Wrong!";
+            }
 
-   setTimeout(()=>{
-     effect.style.display="none";
-     i++;
-     if(i<quiz.length) load();
-     else setTimeout(()=>location.href="index.html",1500);
-   },1200);
-  };
-  options.appendChild(d);
- });
+            setTimeout(()=>{
+                idx++;
+                if(idx<quiz.length) load();
+                else setTimeout(()=>location.href="index.html",2000);
+            },1800);
+        };
+        options.appendChild(d);
+    });
 }
 load();
 </script>
