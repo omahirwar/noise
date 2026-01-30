@@ -501,4 +501,76 @@ body.hide-ui .controls {
 		left: auto;
 		font-size: 0.7rem;
 	}
+
+}
+/* ================================
+   NOISE INFORMATION SECTION
+   ================================ */
+
+.noise-info {
+	position: relative;
+	max-width: 900px;
+	margin: 12vh auto 0;
+	padding: 2.5rem 3rem;
+	text-align: center;
+	z-index: 5;
+	color: rgba(244, 231, 195, 0.85);
+	pointer-events: none;
+}
+
+.noise-info h2 {
+	font-size: clamp(2.2rem, 4vw, 3.2rem);
+	margin-bottom: 1rem;
+	background: linear-gradient(135deg, var(--gold), var(--champagne));
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	text-shadow: 0 0 30px rgba(212, 175, 55, 0.25);
+}
+
+.noise-info h3 {
+	margin-top: 2.2rem;
+	font-size: 1.4rem;
+	color: var(--gold);
+}
+
+.noise-info p {
+	font-size: 1.05rem;
+	line-height: 1.85;
+	margin-top: 0.9rem;
+	opacity: 0.9;
+}
+
+.noise-tagline {
+	margin-top: 2.8rem;
+	font-style: italic;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	font-size: 0.9rem;
+	color: var(--champagne);
+	opacity: 0.65;
+}
+
+/* ================================
+   RESPONSIVE TWEAKS
+   ================================ */
+
+@media (max-width: 768px) {
+	.noise-info {
+		margin-top: 8vh;
+		padding: 1.5rem 1.2rem;
+	}
+
+	.noise-info h2 {
+		font-size: 1.8rem;
+	}
+
+	.noise-info h3 {
+		font-size: 1.2rem;
+	}
+
+	.noise-info p {
+		font-size: 0.95rem;
+		line-height: 1.7;
+	}
 }
