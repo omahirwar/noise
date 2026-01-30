@@ -1,88 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Noise Quiz</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Work+Sans:wght@400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tooplate-fireworks-style.css">
-
-<style>
-body{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background:linear-gradient(135deg,#0a0a0f,#1a1a2e);
-    color:#fff;
-    font-family:'Work Sans',sans-serif;
-}
-
-.quiz-box{
-    background:rgba(0,0,0,0.6);
-    padding:30px;
-    border-radius:16px;
-    width:90%;
-    max-width:420px;
-    text-align:center;
-    box-shadow:0 0 40px rgba(212,175,55,0.25);
-}
-
-.quiz-box h1{
-    font-family:'Cormorant Garamond',serif;
-    color:#FFD700;
-    margin-bottom:20px;
-}
-
-.option{
-    border:1px solid #FFD700;
-    padding:12px;
-    margin:10px 0;
-    border-radius:10px;
-    cursor:pointer;
-    transition:.3s;
-}
-
-.option:hover{
-    background:#FFD700;
-    color:#000;
-}
-
-#result{
-    margin-top:15px;
-    font-size:1.1rem;
-}
-</style>
-</head>
-
-<body>
-
-<div class="quiz-box">
-    <h1>🎆 Noise Quiz</h1>
-    <p id="question"></p>
-    <div id="options"></div>
-    <p id="result"></p>
-</div>
-
-<script>
-const quiz=[
- {q:"Noise ka core vibe kya hai?",o:["Energy","Silence","Sleep","Boring"],a:0},
- {q:"Fireworks kis tech pe bane?",o:["Canvas","Video","GIF","Flash"],a:0},
- {q:"2026 Noise ke liye?",o:["New Era","End","Nothing","Bug"],a:0}
+const quiz = [
+  {
+    q: "Noise.xyz platform primarily kis cheez ke liye jana jata hai?",
+    o: ["Music sharing", "Web3 social & discovery", "E-commerce", "Movie streaming"],
+    a: 1
+  },
+  {
+    q: "Noise project ka tagline kya emphasize karta hai?",
+    o: ["Centralized control", "Join our community", "Silent mode", "Offline use"],
+    a: 1
+  },
+  {
+    q: "Noise platform par aap kya discover kar sakte ho?",
+    o: ["Trading bots", "Trade Trends & news", "Restaurant menus", "Bank accounts"],
+    a: 1
+  },
+  {
+    q: "Noise Labs Inc ne recently kaunsa announcement kiya tha?",
+    o: ["Acquired a restaurant", "Raised seed funding", "Cancelled project", "Launched game app"],
+    a: 1
+  },
+  {
+    q: "Noise.xyz ka frontend primarily kis genre ka experience deta hai?",
+    o: ["Silent podcasts", "Community & trends", "Offline files", "Weather updates"],
+    a: 1
+  },
+  {
+    q: "Noise platform par kaunsa content available hota hai?",
+    o: ["Latest news & product updates", "Only photos", "Audio songs", "TV shows"],
+    a: 0
+  },
+  {
+    q: "Noise community ka focus kis par hota hai?",
+    o: ["Travel stories", "Web3 engagement", "Sports scores", "Fitness tracking"],
+    a: 1
+  },
+  {
+    q: "Noise.xyz ka main domain kis field se related hai?",
+    o: ["Healthcare", "Crypto/Web3", "Cooking", "Automobiles"],
+    a: 1
+  },
+  {
+    q: "Noise platform par trending kya dekhne ko milta hai?",
+    o: ["Daily memes", "Trade & social trends", "Weather forecast", "Job listings"],
+    a: 1
+  },
+  {
+    q: "Noise project user ko kis cheez me enable karta hai?",
+    o: ["Offline games", "Web3 discovery & community interaction", "Video editing", "Banking"],
+    a: 1
+  },
+  {
+    q: "Noise.xyz ka primary audience kiske liye hai?",
+    o: ["Web3 users", "Car drivers", "Kids under 5", "Only chefs"],
+    a: 0
+  },
+  {
+    q: "Noise platform par community engagement kaunse feature se hota hai?",
+    o: ["News & Trends", "Random ads", "Offline books", "Cooking recipes"],
+    a: 0
+  },
+  {
+    q: "Noise Labs ka focus kis industry me hai?",
+    o: ["Web3 & social discovery", "Agriculture", "Real estate", "Dentistry"],
+    a: 0
+  }
 ];
-
-const q=quiz[Math.floor(Math.random()*quiz.length)];
-question.innerText=q.q;
-
-q.o.forEach((opt,i)=>{
- const d=document.createElement("div");
- d.className="option";
- d.innerText=opt;
- d.onclick=()=>result.innerText=i===q.a?"✅ Correct!":"❌ Wrong!";
- options.appendChild(d);
-});
-</script>
-
-</body>
-</html>
