@@ -17,6 +17,7 @@ body{
 }
 canvas{ position:fixed; inset:0; }
 
+/* QUIZ BOX */
 .quiz-box{
     position:fixed;
     top:50%;
@@ -45,18 +46,53 @@ canvas{ position:fixed; inset:0; }
     margin:10px 0;
     border-radius:10px;
     cursor:pointer;
-    transition:.3s;
+    transition:.25s;
 }
 .option:hover{ background:#FFD700; color:#000; }
 .option.disabled{ pointer-events:none; opacity:.5; }
 
 #result{ margin-top:12px; font-size:1.1rem; }
+
+/* FULLSCREEN ANIMATION OVERLAY */
+.overlay{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    pointer-events:none;
+    opacity:0;
+}
+
+.overlay.correct{
+    background:radial-gradient(circle, rgba(255,215,0,0.6), rgba(0,0,0,0.9));
+    animation:blast 0.8s ease-out;
+}
+
+.overlay.wrong{
+    background:radial-gradient(circle, rgba(255,50,50,0.6), rgba(0,0,0,0.9));
+    animation:shake 0.6s ease-in-out;
+}
+
+@keyframes blast{
+    0%{transform:scale(0.2);opacity:0}
+    40%{opacity:1}
+    100%{transform:scale(1.4);opacity:0}
+}
+
+@keyframes shake{
+    0%{transform:translateX(0)}
+    20%{transform:translateX(-20px)}
+    40%{transform:translateX(20px)}
+    60%{transform:translateX(-15px)}
+    80%{transform:translateX(15px)}
+    100%{transform:translateX(0);opacity:0}
+}
 </style>
 </head>
 
 <body>
 
 <canvas id="canvas"></canvas>
+<div class="overlay" id="overlay"></div>
 
 <div class="quiz-box">
     <h1>🎆 Noise Quiz</h1>
@@ -67,122 +103,91 @@ canvas{ position:fixed; inset:0; }
 </div>
 
 <script>
-// ================= QUESTIONS (ANSWER TEXT) =================
+// ================= QUESTIONS =================
 const quiz = [
- {q:"What is Noise.xyz primarily known for?",a:"Web3 social discovery platform",w:["Music streaming app","E-commerce website","Movie platform"]},
- {q:"What is the main focus of the Noise project?",a:"Web3 community and discovery",w:["Gaming","Banking services","Education"]},
- {q:"What type of content can you discover on Noise?",a:"Trends and news",w:["Recipes","Movies","Job listings"]},
- {q:"Noise.xyz belongs to which industry?",a:"Crypto / Web3",w:["Healthcare","Agriculture","Automobile"]},
- {q:"Who is the primary audience of Noise?",a:"Web3 users",w:["Children","Doctors","Drivers"]},
- {q:"What kind of experience does Noise provide?",a:"Community-driven experience",w:["Offline usage","Silent mode","Single-user only"]},
- {q:"How do users engage on the Noise platform?",a:"Through trends and content",w:["Through ads","Through games","Through calls"]},
- {q:"What is the main purpose of Noise?",a:"Discovery and interaction",w:["Watching movies","Listening to music","Banking"]},
- {q:"How would you describe the Noise.xyz UI?",a:"Modern and clean",w:["Old styled","Text-only","Paper-based"]},
- {q:"What does the Noise community promote?",a:"Web3 awareness",w:["Cooking","Fitness","Travel"]},
- {q:"What is the Noise ecosystem based on?",a:"Social discovery",w:["Offline work","Solo play","Messaging"]},
- {q:"What can users do on Noise.xyz?",a:"Explore trends",w:["Order food","Book tickets","Edit videos"]},
- {q:"What is the core idea behind the Noise project?",a:"Make signal from noise",w:["Stay silent","Avoid trends","Hide content"]}
+ {q:"What is Noise.xyz primarily known for?",a:"Web3 social discovery platform",w:["Music app","E-commerce","Movie platform"]},
+ {q:"What is the main focus of Noise?",a:"Web3 community and discovery",w:["Gaming","Banking","Education"]},
+ {q:"Noise belongs to which industry?",a:"Crypto / Web3",w:["Healthcare","Agriculture","Automobile"]},
+ {q:"Noise primary audience?",a:"Web3 users",w:["Kids","Doctors","Drivers"]},
+ {q:"Noise ecosystem based on?",a:"Social discovery",w:["Offline work","Messaging","Solo play"]},
+ {q:"Noise UI style?",a:"Modern and clean",w:["Old","Text only","Paper based"]},
+ {q:"Noise community promotes?",a:"Web3 awareness",w:["Fitness","Cooking","Travel"]},
+ {q:"Noise lets users?",a:"Explore trends",w:["Order food","Book tickets","Edit videos"]},
+ {q:"Noise content type?",a:"Trends and news",w:["Movies","Recipes","Jobs"]},
+ {q:"Noise experience?",a:"Community-driven",w:["Offline","Silent","Solo"]},
+ {q:"Noise purpose?",a:"Discovery and interaction",w:["Music","Movies","Banking"]},
+ {q:"Noise engagement via?",a:"Trends and content",w:["Ads","Games","Calls"]},
+ {q:"Noise core idea?",a:"Make signal from noise",w:["Stay silent","Avoid trends","Hide content"]}
 ];
 
-// ================= SHUFFLE FUNCTION =================
-function shuffle(arr){
-    return arr.sort(()=>Math.random()-0.5);
-}
+function shuffle(a){ return a.sort(()=>Math.random()-0.5); }
 
-let index = 0;
-let answered = false;
+let index=0, answered=false;
 
 // ================= FIREWORKS =================
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = innerWidth;
-canvas.height = innerHeight;
-
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=innerWidth; canvas.height=innerHeight;
 let particles=[];
 class Particle{
-    constructor(x,y){
-        const a=Math.random()*Math.PI*2;
-        const s=Math.random()*4+2;
-        this.x=x; this.y=y;
-        this.vx=Math.cos(a)*s;
-        this.vy=Math.sin(a)*s;
-        this.life=1;
-        this.decay=Math.random()*0.02+0.01;
-    }
-    update(){
-        this.x+=this.vx;
-        this.y+=this.vy;
-        this.vy+=0.05;
-        this.life-=this.decay;
-    }
-    draw(){
-        ctx.globalAlpha=this.life;
-        ctx.fillStyle="#FFD700";
-        ctx.beginPath();
-        ctx.arc(this.x,this.y,2,0,Math.PI*2);
-        ctx.fill();
-    }
+ constructor(x,y){
+  const a=Math.random()*Math.PI*2,s=Math.random()*4+2;
+  this.x=x;this.y=y;this.vx=Math.cos(a)*s;this.vy=Math.sin(a)*s;
+  this.life=1;this.decay=Math.random()*0.02+0.01;
+ }
+ update(){this.x+=this.vx;this.y+=this.vy;this.vy+=0.05;this.life-=this.decay;}
+ draw(){ctx.globalAlpha=this.life;ctx.fillStyle="#FFD700";ctx.beginPath();ctx.arc(this.x,this.y,2,0,Math.PI*2);ctx.fill();}
 }
-function firework(x,y){
-    for(let i=0;i<80;i++) particles.push(new Particle(x,y));
-}
-(function animate(){
-    ctx.fillStyle="rgba(10,10,15,0.45)";
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    particles.forEach((p,i)=>{
-        p.update(); p.draw();
-        if(p.life<=0) particles.splice(i,1);
-    });
-    requestAnimationFrame(animate);
+function firework(x,y){for(let i=0;i<80;i++)particles.push(new Particle(x,y));}
+(function anim(){
+ ctx.fillStyle="rgba(10,10,15,0.45)";
+ ctx.fillRect(0,0,canvas.width,canvas.height);
+ particles.forEach((p,i)=>{p.update();p.draw();if(p.life<=0)particles.splice(i,1);});
+ requestAnimationFrame(anim);
 })();
 
 // ================= QUIZ FLOW =================
+const overlay=document.getElementById("overlay");
+
 function loadQuestion(){
-    answered=false;
-    result.innerText="";
-    options.innerHTML="";
+ answered=false; result.innerText=""; options.innerHTML="";
+ const q=quiz[index];
+ progress.innerText=`Question ${index+1} / 13`;
+ question.innerText=q.q;
 
-    const q = quiz[index];
-    progress.innerText = `Question ${index+1} / 13`;
-    question.innerText = q.q;
+ shuffle([q.a,...q.w]).forEach(opt=>{
+  const d=document.createElement("div");
+  d.className="option"; d.innerText=opt;
+  d.onclick=()=>{
+    if(answered) return;
+    answered=true;
+    document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
 
-    // build & shuffle options
-    let opts = shuffle([q.a, ...q.w]);
+    overlay.className="overlay " + (opt===q.a?"correct":"wrong");
+    overlay.style.opacity=1;
+    setTimeout(()=>overlay.style.opacity=0,700);
 
-    opts.forEach(opt=>{
-        const d=document.createElement("div");
-        d.className="option";
-        d.innerText=opt;
+    if(opt===q.a){
+      result.innerText="✅ Correct!";
+      firework(innerWidth/2,innerHeight/2);
+    }else{
+      result.innerText="❌ Wrong!";
+    }
 
-        d.onclick=()=>{
-            if(answered) return;
-            answered=true;
-            document.querySelectorAll(".option").forEach(o=>o.classList.add("disabled"));
-
-            if(opt === q.a){
-                result.innerText="✅ Correct!";
-                setTimeout(()=>firework(innerWidth/2,innerHeight/2),700);
-            }else{
-                result.innerText="❌ Wrong!";
-            }
-
-            setTimeout(()=>{
-                index++;
-                if(index < quiz.length){
-                    loadQuestion();
-                }else{
-                    question.innerText="🎉 Quiz Completed!";
-                    progress.innerText="Redirecting to Home...";
-                    options.innerHTML="";
-                    setTimeout(()=>window.location.href="index.html",2000);
-                }
-            },1200);
-        };
-
-        options.appendChild(d);
-    });
+    setTimeout(()=>{
+      index++;
+      if(index<quiz.length) loadQuestion();
+      else{
+        question.innerText="🎉 Quiz Completed!";
+        progress.innerText="Redirecting to Home...";
+        options.innerHTML="";
+        setTimeout(()=>location.href="index.html",2000);
+      }
+    },1200);
+  };
+  options.appendChild(d);
+ });
 }
-
 loadQuestion();
 </script>
 
